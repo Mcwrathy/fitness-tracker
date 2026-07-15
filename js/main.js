@@ -1,6 +1,6 @@
 // Main app bootstrap and routing
 
-let currentScreen = 'today';
+let currentScreen = 'welcome';
 
 async function initApp() {
   // Register service worker
@@ -50,7 +50,12 @@ async function initApp() {
   }
 
   // Render initial screen
-  renderApp('today');
+  const session = Storage.getCurrentSession();
+  if (session?.sessionActive) {
+    renderApp('today');
+  } else {
+    renderApp('welcome');
+  }
 }
 
 async function renderApp(screen) {
@@ -61,8 +66,73 @@ async function renderApp(screen) {
   const oldBubble = document.getElementById('ai-chat-bubble');
   if (oldBubble) oldBubble.remove();
 
+  // Remove old timer bar if present
+  const oldTimerBar = document.getElementById('session-timer-bar');
+  if (oldTimerBar) oldTimerBar.remove();
+
+  // Update nav visibility and add timer bar if needed
+  const nav = document.getElementById('nav');
+  const session = Storage.getCurrentSession();
+  const isSessionActive = session?.sessionActive || false;
+
+  if (screen === 'welcome' || isSessionActive) {
+    if (nav) nav.style.display = 'none';
+  } else {
+    if (nav) nav.style.display = 'flex';
+  }
+
+  // Add timer bar if session is active
+  if (isSessionActive && screen === 'today') {
+    const timerBar = document.createElement('div');
+    timerBar.id = 'session-timer-bar';
+    timerBar.style.cssText = `
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #2a2a2a;
+      border-top: 1px solid #444;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      z-index: 100;
+    `;
+    timerBar.innerHTML = `
+      <div id="session-timer" style="
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #2dd4bf;
+        font-family: 'Courier New', monospace;
+      ">00:00</div>
+      <button
+        id="stop-session-btn"
+        style="
+          width: 44px;
+          height: 44px;
+          background: #ef4444;
+          color: #fff;
+          border: none;
+          border-radius: 50%;
+          cursor: pointer;
+          font-size: 1.25rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        "
+      >■</button>
+    `;
+    document.body.appendChild(timerBar);
+
+    document.getElementById('stop-session-btn').onclick = () => {
+      TodayScreen.finishSession();
+    };
+  }
+
   // Render screen
-  if (screen === 'today') {
+  if (screen === 'welcome') {
+    await WelcomeScreen.render();
+  } else if (screen === 'today') {
     await TodayScreen.render();
   } else if (screen === 'history') {
     await HistoryScreen.render();
@@ -162,8 +232,8 @@ async function main() {
 
   // Handle hash-based routing
   window.onhashchange = () => {
-    const screen = window.location.hash.slice(1) || 'today';
-    if (['today', 'history', 'plan', 'settings'].includes(screen)) {
+    const screen = window.location.hash.slice(1) || 'welcome';
+    if (['welcome', 'today', 'history', 'plan', 'settings'].includes(screen)) {
       renderApp(screen);
     }
   };

@@ -1,6 +1,8 @@
-// Today screen - main workout logging interface
+// Today screen - main workout logging interface (active session)
 
 const TodayScreen = {
+  timerInterval: null,
+
   async render() {
     const container = document.getElementById('app');
     const today = new Date();
@@ -8,18 +10,10 @@ const TodayScreen = {
     const dayKey = this.getDayKey(today);
 
     let currentSession = Storage.getCurrentSession();
-    if (!currentSession || currentSession.date !== dateStr) {
-      // Start new session for today
-      currentSession = {
-        id: 'session-' + Date.now(),
-        date: dateStr,
-        planDay: dayKey,
-        hrStart: null,
-        hrEnd: null,
-        exercises: [],
-        finishedAt: null
-      };
-      Storage.setCurrentSession(currentSession);
+    if (!currentSession || !currentSession.sessionActive) {
+      // Not in active session, go back to Welcome
+      renderApp('welcome');
+      return;
     }
 
     const plan = Storage.getPlan();
@@ -27,115 +21,73 @@ const TodayScreen = {
     const library = ExerciseLibrary.getAll();
 
     const html = `
-      <div style="padding: 1rem;">
+      <div style="
+        padding: 1rem;
+        padding-bottom: 80px;
+      ">
         <!-- Header -->
         <div style="
-          margin-bottom: 1.5rem;
+          margin-bottom: 1rem;
           text-align: center;
         ">
           <h1 style="
             margin: 0;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             color: #e8e8e8;
           ">
             ${this.formatDate(today)}
           </h1>
           <p style="
-            margin: 0.5rem 0 0 0;
+            margin: 0.25rem 0 0 0;
             color: #999;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
           ">
             ${this.getPlanDayName(dayKey)}
           </p>
         </div>
 
-        <!-- HR fields -->
-        <div style="
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 1rem;
-          margin-bottom: 1.5rem;
-        ">
-          <div>
-            <label style="
-              display: block;
-              color: #999;
-              font-size: 0.85rem;
-              margin-bottom: 0.5rem;
-            ">Start HR (bpm)</label>
-            <input
-              id="hr-start"
-              type="number"
-              min="60"
-              max="200"
-              value="${currentSession.hrStart || ''}"
-              placeholder="---"
-              style="
-                width: 100%;
-                padding: 0.75rem;
-                border: 1px solid #444;
-                border-radius: 6px;
-                background: #2a2a2a;
-                color: #e8e8e8;
-                font-size: 1rem;
-                box-sizing: border-box;
-              "
-            />
-          </div>
-          <div>
-            <label style="
-              display: block;
-              color: #999;
-              font-size: 0.85rem;
-              margin-bottom: 0.5rem;
-            ">End HR (bpm)</label>
-            <input
-              id="hr-end"
-              type="number"
-              min="60"
-              max="200"
-              value="${currentSession.hrEnd || ''}"
-              placeholder="---"
-              style="
-                width: 100%;
-                padding: 0.75rem;
-                border: 1px solid #444;
-                border-radius: 6px;
-                background: #2a2a2a;
-                color: #e8e8e8;
-                font-size: 1rem;
-                box-sizing: border-box;
-              "
-            />
-          </div>
-        </div>
-
-        <!-- STOP symptoms strip (always visible) -->
-        <div style="
-          background: rgba(239, 68, 68, 0.1);
-          border-left: 3px solid #ef4444;
-          padding: 0.75rem;
-          border-radius: 4px;
-          margin-bottom: 1.5rem;
-          color: #fca5a5;
-          font-size: 0.9rem;
-          line-height: 1.4;
-        ">
-          <strong>STOP if:</strong> chest pain, unusual shortness of breath, dizziness, palpitations, blurred vision
-        </div>
-
-        <!-- HR safety banner -->
+        <!-- Compact HR target banner -->
         <div style="
           background: #1a3a3a;
           border: 1px solid #2dd4bf;
-          padding: 0.75rem;
+          padding: 0.5rem;
           border-radius: 6px;
-          margin-bottom: 1.5rem;
+          margin-bottom: 1rem;
           color: #2dd4bf;
-          font-size: 0.9rem;
+          font-size: 0.8rem;
           text-align: center;
         ">
-          Target HR: 100–130 bpm | Ceiling: 140 bpm
+          Target 100–130 · Ceiling 140
+        </div>
+
+        <!-- HR log link -->
+        <button
+          id="log-hr-btn"
+          style="
+            width: 100%;
+            padding: 0.5rem;
+            background: transparent;
+            color: #2dd4bf;
+            border: 1px solid #2dd4bf;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+          "
+        >+ Log HR</button>
+
+        <!-- STOP symptoms strip (compact, always visible) -->
+        <div style="
+          background: rgba(239, 68, 68, 0.1);
+          border-left: 3px solid #ef4444;
+          padding: 0.5rem;
+          border-radius: 4px;
+          margin-bottom: 1rem;
+          color: #fca5a5;
+          font-size: 0.8rem;
+          line-height: 1.3;
+        ">
+          <strong>STOP if:</strong> chest pain, unusual SOB, dizziness, palpitations, blurred vision
         </div>
 
         <!-- Exercises -->
@@ -147,33 +99,16 @@ const TodayScreen = {
           id="add-exercise-btn"
           style="
             width: 100%;
-            padding: 1rem;
+            padding: 0.75rem;
             background: #444;
             color: #e8e8e8;
             border: none;
             border-radius: 6px;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-bottom: 1.5rem;
-          "
-        >+ Add Exercise</button>
-
-        <!-- Finish session button -->
-        <button
-          id="finish-session-btn"
-          style="
-            width: 100%;
-            padding: 1rem;
-            background: #2dd4bf;
-            color: #1a1a1a;
-            border: none;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 0.95rem;
             cursor: pointer;
             margin-bottom: 1rem;
           "
-        >Finish Session</button>
+        >+ Add Exercise</button>
       </div>
     `;
 
@@ -184,26 +119,152 @@ const TodayScreen = {
 
     // Event listeners
     document.getElementById('add-exercise-btn').onclick = () => this.showAddExerciseModal();
-    document.getElementById('finish-session-btn').onclick = () => this.finishSession();
+    document.getElementById('log-hr-btn').onclick = () => this.showHRModal();
 
-    // HR input handlers
-    document.getElementById('hr-start').onchange = (e) => {
-      currentSession.hrStart = e.target.value ? parseInt(e.target.value) : null;
-      Storage.setCurrentSession(currentSession);
-    };
-
-    document.getElementById('hr-end').onchange = (e) => {
-      const val = e.target.value ? parseInt(e.target.value) : null;
-      if (val && val > 140) {
-        alert('⚠️ HR exceeds ceiling (140 bpm)!');
-      }
-      currentSession.hrEnd = val;
-      Storage.setCurrentSession(currentSession);
-    };
+    // Start timer
+    this.startTimer();
 
     // Add chat bubble
-    const bubble = AIHook.createChatBubble('Today', dateStr, null);
+    const bubble = AIHook.createChatBubble('Workout', dateStr, null);
     document.body.appendChild(bubble);
+  },
+
+  startTimer() {
+    if (this.timerInterval) clearInterval(this.timerInterval);
+
+    const updateTimer = () => {
+      const session = Storage.getCurrentSession();
+      if (!session || !session.sessionActive) {
+        if (this.timerInterval) clearInterval(this.timerInterval);
+        return;
+      }
+
+      const elapsed = Math.floor((Date.now() - session.startTime) / 1000);
+      const mins = Math.floor(elapsed / 60);
+      const secs = elapsed % 60;
+      const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+      const timerDisplay = document.getElementById('session-timer');
+      if (timerDisplay) timerDisplay.textContent = timeStr;
+    };
+
+    updateTimer();
+    this.timerInterval = setInterval(updateTimer, 1000);
+  },
+
+  showHRModal() {
+    const session = Storage.getCurrentSession();
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 600;
+    `;
+
+    const content = document.createElement('div');
+    content.style.cssText = `
+      background: #2a2a2a;
+      border-radius: 8px;
+      padding: 1.5rem;
+      width: 85%;
+      max-width: 300px;
+    `;
+
+    content.innerHTML = `
+      <h2 style="margin-top: 0; color: #e8e8e8; font-size: 1.1rem;">Log Heart Rate</h2>
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; color: #999; font-size: 0.85rem; margin-bottom: 0.5rem;">Start HR (bpm)</label>
+        <input
+          id="modal-hr-start"
+          type="number"
+          min="60"
+          max="200"
+          value="${session.hrStart || ''}"
+          placeholder="---"
+          style="
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #444;
+            border-radius: 6px;
+            background: #1a1a1a;
+            color: #e8e8e8;
+            font-size: 1rem;
+            box-sizing: border-box;
+          "
+        />
+      </div>
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: block; color: #999; font-size: 0.85rem; margin-bottom: 0.5rem;">End HR (bpm)</label>
+        <input
+          id="modal-hr-end"
+          type="number"
+          min="60"
+          max="200"
+          value="${session.hrEnd || ''}"
+          placeholder="---"
+          style="
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #444;
+            border-radius: 6px;
+            background: #1a1a1a;
+            color: #e8e8e8;
+            font-size: 1rem;
+            box-sizing: border-box;
+          "
+        />
+      </div>
+      <button
+        id="modal-save"
+        style="
+          width: 100%;
+          padding: 0.75rem;
+          background: #2dd4bf;
+          color: #1a1a1a;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+        "
+      >Save</button>
+      <button
+        id="modal-cancel"
+        style="
+          width: 100%;
+          padding: 0.75rem;
+          background: #444;
+          color: #e8e8e8;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+        "
+      >Cancel</button>
+    `;
+
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+
+    document.getElementById('modal-save').onclick = () => {
+      const hrStart = document.getElementById('modal-hr-start').value;
+      const hrEnd = document.getElementById('modal-hr-end').value;
+      session.hrStart = hrStart ? parseInt(hrStart) : null;
+      session.hrEnd = hrEnd ? parseInt(hrEnd) : null;
+      if (hrEnd && parseInt(hrEnd) > 140) {
+        alert('⚠️ HR exceeds ceiling (140 bpm)!');
+      }
+      Storage.setCurrentSession(session);
+      modal.remove();
+    };
+
+    document.getElementById('modal-cancel').onclick = () => modal.remove();
   },
 
   renderExercises(dayExercises, currentSession, library) {
@@ -240,6 +301,62 @@ const TodayScreen = {
         padding: 1rem;
         margin-bottom: 1rem;
       `;
+
+      // Equipment tags
+      let equipmentHtml = '';
+      if (ex.equipment && ex.equipment.length > 0) {
+        const equipmentMap = {
+          'barbell': '🏋',
+          'dumbbells': '🏋',
+          'bench': '🛋',
+          'cable machine': '🔗',
+          'landmine': '⚙️',
+          'machine': '⚙️',
+          'bodyweight': '💪'
+        };
+        equipmentHtml = `
+          <div style="
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+          ">
+            ${ex.equipment.map(eq => `
+              <span style="
+                background: #1a1a1a;
+                color: #2dd4bf;
+                padding: 0.25rem 0.6rem;
+                border-radius: 4px;
+                font-size: 0.75rem;
+              ">${equipmentMap[eq] || '•'} ${eq}</span>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      // How-to button
+      const encodedName = encodeURIComponent(`how to do ${ex.name} proper form`);
+      const youtubeUrl = `https://www.youtube.com/results?search_query=${encodedName}`;
+      const howToHtml = `
+        <button
+          data-youtube-url="${youtubeUrl}"
+          class="how-to-btn"
+          style="
+            display: block;
+            width: 100%;
+            padding: 0.4rem;
+            background: transparent;
+            color: #999;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            text-align: left;
+            margin-bottom: 0.75rem;
+          "
+        >▶ How to</button>
+      `;
+      // TODO: curate specific YouTube URLs per exercise in later versions
 
       let setsHtml = '';
       sessionEx.sets.forEach((set, setIdx) => {
@@ -335,14 +452,16 @@ const TodayScreen = {
 
       card.innerHTML = `
         <h3 style="
-          margin: 0 0 1rem 0;
+          margin: 0 0 0.5rem 0;
           color: #e8e8e8;
-          font-size: 1.1rem;
+          font-size: 1rem;
         ">${ex.name}</h3>
+        ${equipmentHtml}
+        ${howToHtml}
         <p style="
           margin: 0 0 1rem 0;
           color: #999;
-          font-size: 0.9rem;
+          font-size: 0.85rem;
         ">Target: ${target.targetSets} × ${target.targetReps} @ ${target.targetWeight} ${target.unit || 'lb'}</p>
         <div>${setsHtml}</div>
         <button
@@ -379,6 +498,13 @@ const TodayScreen = {
 
     document.querySelectorAll('.add-set-btn').forEach(btn => {
       btn.onclick = (e) => this.addSet(e.target);
+    });
+
+    document.querySelectorAll('.how-to-btn').forEach(btn => {
+      btn.onclick = (e) => {
+        const url = e.target.getAttribute('data-youtube-url');
+        window.open(url, '_blank');
+      };
     });
 
     Storage.setCurrentSession(currentSession);
@@ -559,10 +685,19 @@ const TodayScreen = {
 
   finishSession() {
     const session = Storage.getCurrentSession();
-    if (!session || session.exercises.length === 0) {
+    if (!session) {
+      renderApp('welcome');
+      return;
+    }
+
+    if (!session.exercises.length) {
       alert('No exercises logged. Add some exercises before finishing.');
       return;
     }
+
+    // Confirm end session
+    const ok = confirm('End session?');
+    if (!ok) return;
 
     // Check for red exertions warning
     let redCount = 0;
@@ -573,11 +708,12 @@ const TodayScreen = {
     });
 
     if (redCount >= 3) {
-      const ok = confirm('⚠️ 3+ red exertions logged. Consider dropping intensity. Finish anyway?');
-      if (!ok) return;
+      const ok2 = confirm('⚠️ 3+ red exertions logged. Consider dropping intensity. Save anyway?');
+      if (!ok2) return;
     }
 
     session.finishedAt = new Date().toISOString();
+    session.sessionActive = false;
     const plan = Storage.getPlan();
     const previousSessions = Storage.getSessions();
     const library = ExerciseLibrary.getAll();
@@ -596,7 +732,7 @@ const TodayScreen = {
     Storage.clearCurrentSession();
 
     alert('Session saved! Targets updated.');
-    window.location.hash = '#history';
+    renderApp('welcome');
   },
 
   getDayKey(date) {

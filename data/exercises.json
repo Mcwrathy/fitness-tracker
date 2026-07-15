@@ -1,0 +1,359 @@
+[
+  {
+    "id": "bench-press",
+    "name": "Bench Press (Barbell)",
+    "muscleGroup": "chest",
+    "equipment": ["barbell", "bench"],
+    "isCustom": false
+  },
+  {
+    "id": "db-bench-press",
+    "name": "Dumbbell Bench Press",
+    "muscleGroup": "chest",
+    "equipment": ["dumbbells", "bench"],
+    "isCustom": false
+  },
+  {
+    "id": "incline-db-press",
+    "name": "Incline Dumbbell Press",
+    "muscleGroup": "chest",
+    "equipment": ["dumbbells", "bench"],
+    "isCustom": false
+  },
+  {
+    "id": "db-fly",
+    "name": "Dumbbell Fly",
+    "muscleGroup": "chest",
+    "equipment": ["dumbbells", "bench"],
+    "isCustom": false
+  },
+  {
+    "id": "push-up",
+    "name": "Push-up",
+    "muscleGroup": "chest",
+    "equipment": ["bodyweight"],
+    "isCustom": false
+  },
+  {
+    "id": "bb-row",
+    "name": "Barbell Row",
+    "muscleGroup": "back",
+    "equipment": ["barbell"],
+    "isCustom": false
+  },
+  {
+    "id": "db-row",
+    "name": "Dumbbell Row",
+    "muscleGroup": "back",
+    "equipment": ["dumbbells"],
+    "isCustom": false
+  },
+  {
+    "id": "seated-cable-row",
+    "name": "Seated Cable Row",
+    "muscleGroup": "back",
+    "equipment": ["cable machine"],
+    "isCustom": false
+  },
+  {
+    "id": "lat-pulldown",
+    "name": "Lat Pulldown",
+    "muscleGroup": "back",
+    "equipment": ["cable machine"],
+    "isCustom": false
+  },
+  {
+    "id": "face-pull",
+    "name": "Face Pull",
+    "muscleGroup": "back",
+    "equipment": ["cable machine"],
+    "isCustom": false
+  },
+  {
+    "id": "db-ohp",
+    "name": "Dumbbell Overhead Press",
+    "muscleGroup": "shoulders",
+    "equipment": ["dumbbells"],
+    "isCustom": false
+  },
+  {
+    "id": "landmine-press",
+    "name": "Landmine Press",
+    "muscleGroup": "shoulders",
+    "equipment": ["barbell", "landmine"],
+    "isCustom": false
+  },
+  {
+    "id": "db-lateral-raise",
+    "name": "Dumbbell Lateral Raise",
+    "muscleGroup": "shoulders",
+    "equipment": ["dumbbells"],
+    "isCustom": false
+  },
+  {
+    "id": "rear-delt-fly",
+    "name": "Rear Delt Fly",
+    "muscleGroup": "shoulders",
+    "equipment": ["dumbbells", "machine"],
+    "isCustom": false
+  },
+  {
+    "id": "band-pull-apart",
+    "name": "Band Pull-Apart",
+    "muscleGroup": "shoulders",
+    "equipment": ["resistance band"],
+    "isCustom": false
+  },
+  {
+    "id": "ez-curl",
+    "name": "EZ-Bar Curl",
+    "muscleGroup": "arms",
+    "equipment": ["barbell"],
+    "isCustom": false
+  },
+  {
+    "id": "db-curl",
+    "name": "Dumbbell Curl",
+    "muscleGroup": "arms",
+    "equipment": ["dumbbells"],
+    "isCustom": false
+  },
+  {
+    "id": "hammer-curl",
+    "name": "Hammer Curl",
+    "muscleGroup": "arms",
+    "equipment": ["dumbbells"],
+    "isCustom": false
+  },
+  {
+    "id": "db-tricep-ext",
+    "name": "Dumbbell Tricep Extension",
+    "muscleGroup": "arms",
+    "equipment": ["dumbbells"],
+    "isCustom": false
+  },
+  {
+    "id": "tricep-pushdown",
+    "name": "Tricep Pushdown",
+    "muscleGroup": "arms",
+    "equipment": ["cable machine"],
+    "isCustom": false
+  },
+  {
+    "id": "close-grip-bench",
+    "name": "Close-Grip Bench Press",
+    "muscleGroup": "arms",
+    "equipment": ["barbell", "bench"],
+    "isCustom": false
+  },
+  {
+    "id": "back-squat",
+    "name": "Back Squat",
+    "muscleGroup": "legs",
+    "equipment": ["barbell", "rack"],
+    "isCustom": false
+  },
+  {
+    "id": "goblet-squat",
+    "name": "Goblet Squat",
+    "muscleGroup": "legs",
+    "equipment": ["dumbbell", "kettlebell"],
+    "isCustom": false
+  },
+  {
+    "id": "leg-press",
+    "name": "Leg Press",
+    "muscleGroup": "legs",
+    "equipment": ["machine"],
+    "isCustom": false
+  },
+  {
+    "id": "db-lunge",
+    "name": "Dumbbell Lunge",
+    "muscleGroup": "legs",
+    "equipment": ["dumbbells"],
+    "isCustom": false
+  },
+  {
+    "id": "calf-raise",
+    "name": "Calf Raise",
+    "muscleGroup": "legs",
+    "equipment": ["barbell", "dumbbells", "machine"],
+    "isCustom": false
+  },
+  {
+    "id": "rdl",
+    "name": "Romanian Deadlift",
+    "muscleGroup": "legs",
+    "equipment": ["barbell", "dumbbells"],
+    "isCustom": false
+  },
+  {
+    "id": "glute-bridge",
+    "name": "Glute Bridge",
+    "muscleGroup": "glutes",
+    "equipment": ["barbell", "bodyweight"],
+    "isCustom": false
+  },
+  {
+    "id": "hip-thrust",
+    "name": "Hip Thrust",
+    "muscleGroup": "glutes",
+    "equipment": ["barbell", "bench"],
+    "isCustom": false
+  },
+  {
+    "id": "db-step-up",
+    "name": "Dumbbell Step-up",
+    "muscleGroup": "glutes",
+    "equipment": ["dumbbells", "bench"],
+    "isCustom": false
+  },
+  {
+    "id": "plank",
+    "name": "Plank",
+    "muscleGroup": "core",
+    "equipment": ["bodyweight"],
+    "isCustom": false
+  },
+  {
+    "id": "db-side-bend",
+    "name": "Dumbbell Side Bend",
+    "muscleGroup": "core",
+    "equipment": ["dumbbell"],
+    "isCustom": false
+  },
+  {
+    "id": "cable-crunch",
+    "name": "Cable Crunch",
+    "muscleGroup": "core",
+    "equipment": ["cable machine"],
+    "isCustom": false
+  },
+  {
+    "id": "hanging-knee-raise",
+    "name": "Hanging Knee Raise",
+    "muscleGroup": "core",
+    "equipment": ["pull-up bar"],
+    "isCustom": false
+  },
+  {
+    "id": "dead-bug",
+    "name": "Dead Bug",
+    "muscleGroup": "core",
+    "equipment": ["bodyweight"],
+    "isCustom": false
+  },
+  {
+    "id": "pallof-press",
+    "name": "Pallof Press",
+    "muscleGroup": "core",
+    "equipment": ["cable machine"],
+    "isCustom": false
+  },
+  {
+    "id": "bird-dog",
+    "name": "Bird Dog",
+    "muscleGroup": "core",
+    "equipment": ["bodyweight"],
+    "isCustom": false
+  },
+  {
+    "id": "recumbent-bike",
+    "name": "Recumbent Bike",
+    "muscleGroup": "cardio",
+    "equipment": ["bike"],
+    "isCustom": false
+  },
+  {
+    "id": "pool-laps",
+    "name": "Pool Laps (Swimming)",
+    "muscleGroup": "cardio",
+    "equipment": ["pool"],
+    "isCustom": false
+  },
+  {
+    "id": "wall-slide",
+    "name": "Wall Slide",
+    "muscleGroup": "shoulders",
+    "equipment": ["wall"],
+    "isCustom": false
+  },
+  {
+    "id": "db-external-rotation",
+    "name": "Dumbbell External Rotation",
+    "muscleGroup": "shoulders",
+    "equipment": ["dumbbells"],
+    "isCustom": false
+  },
+  {
+    "id": "hex-bar-deadlift",
+    "name": "Hex Bar Deadlift",
+    "muscleGroup": "legs",
+    "equipment": ["hex bar"],
+    "isCustom": false
+  },
+  {
+    "id": "trap-bar-deadlift",
+    "name": "Trap Bar Deadlift",
+    "muscleGroup": "legs",
+    "equipment": ["trap bar"],
+    "isCustom": false
+  },
+  {
+    "id": "machine-leg-curl",
+    "name": "Machine Leg Curl",
+    "muscleGroup": "legs",
+    "equipment": ["machine"],
+    "isCustom": false
+  },
+  {
+    "id": "leg-extension",
+    "name": "Leg Extension",
+    "muscleGroup": "legs",
+    "equipment": ["machine"],
+    "isCustom": false
+  },
+  {
+    "id": "pendulum-squat",
+    "name": "Pendulum Squat",
+    "muscleGroup": "legs",
+    "equipment": ["machine"],
+    "isCustom": false
+  },
+  {
+    "id": "belt-squat",
+    "name": "Belt Squat",
+    "muscleGroup": "legs",
+    "equipment": ["machine"],
+    "isCustom": false
+  },
+  {
+    "id": "chest-fly",
+    "name": "Chest Fly Machine",
+    "muscleGroup": "chest",
+    "equipment": ["machine"],
+    "isCustom": false
+  },
+  {
+    "id": "decline-sit-up",
+    "name": "Decline Sit-up",
+    "muscleGroup": "core",
+    "equipment": ["bench"],
+    "isCustom": false
+  },
+  {
+    "id": "resistance-band-rows",
+    "name": "Resistance Band Rows",
+    "muscleGroup": "back",
+    "equipment": ["resistance band"],
+    "isCustom": false
+  },
+  {
+    "id": "landmine-row",
+    "name": "Landmine Row",
+    "muscleGroup": "back",
+    "equipment": ["barbell", "landmine"],
+    "isCustom": false
+  }
+]
